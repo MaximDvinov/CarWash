@@ -1,0 +1,8 @@
+openapi: "3.0.3"
+info:
+  title: "CarWash API"
+  description: "CarWash API"
+  version: "1.0.0"
+servers:
+- url: "https://CarWash"
+paths: {}

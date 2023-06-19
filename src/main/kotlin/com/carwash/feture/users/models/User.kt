@@ -1,7 +1,23 @@
-package com.carwash.models
+package com.carwash.feture.users.models
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class UserSimpleInfo(
+    val firstName: String,
+    val lastName: String,
+    val patronymic: String?,
+    val email: String
+)
+
+fun User.toSimple() : UserSimpleInfo {
+    return UserSimpleInfo(
+        firstName = this.firstName,
+        lastName = this.lastName,
+        patronymic = this.patronymic,
+        email = this.email
+    )
+}
 
 @Serializable
 data class TokenWithUser(

@@ -1,11 +1,10 @@
-package com.carwash.service
+package com.carwash.feture.users
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.carwash.db.dao.*
-import com.carwash.models.*
-import java.util.UUID
+import com.carwash.feture.users.models.*
+import java.util.*
 
-class UserService(private val userDao: UserDao) {
+class UserRepository(private val userDao: UserDao) {
     suspend fun getUserById(id: Int?): UserResponse? {
         return id?.let { userDao.getUserById(it)?.toResponse() }
     }
@@ -20,8 +19,8 @@ class UserService(private val userDao: UserDao) {
         }
     }
 
-    suspend fun updateUser(id: Int, user: User): UserResponse {
-        return userDao.updateUser(id, user).toResponse()
+    suspend fun updateUser(id: Int, user: User): Boolean {
+        return userDao.updateUser(id, user) > 0
     }
 
     suspend fun updateRole(user: Int, role: Int) {

@@ -1,23 +1,1298 @@
 openapi: "3.0.3"
 info:
-  title: "Application API"
-  description: "Application API"
+  title: "CarWash API"
+  description: "CarWash API"
   version: "1.0.0"
 servers:
-  - url: "http://0.0.0.0:8080"
+- url: "http://127.0.0.1:8080"
 paths:
-  /:
+  /login:
     get:
-      description: "Hello World!"
+      tags:
+        - "User"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/EmailWithPassword"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/TokenWithUser"
+  /users:
+    get:
+      tags:
+        - "User"
+      description: ""
       responses:
         "200":
           description: "OK"
           content:
-            text/plain:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+    post:
+      tags:
+        - "User"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
               schema:
                 type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+  /users/{id}:
+    delete:
+      tags:
+        - "User"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "integer"
+                format: "int32"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+    get:
+      tags:
+        - "User"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      tags:
+        - "User"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+  /users/role:
+    patch:
+      tags:
+        - "User"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "role"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+  /categories:
+    delete:
+      tags:
+        - "Category"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+    get:
+      tags:
+        - "Category"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "name"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+    post:
+      tags:
+        - "Category"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/ServiceCategory"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ServiceCategory"
+    put:
+      tags:
+        - "Category"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/ServiceCategory"
+        required: true
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /categories/{id}:
+    get:
+      tags:
+        - "Category"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ServiceCategory"
+  /services:
+    get:
+      tags:
+        - "Services"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "name"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "price"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "category"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      tags:
+        - "Services"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Service"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Service"
+  /services/{id}:
+    delete:
+      tags:
+        - "Services"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+    get:
+      tags:
+        - "Services"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Service"
+    put:
+      tags:
+        - "Services"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Service"
+        required: true
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /orders:
+    get:
+      tags:
+        - "Orders"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator_start_date"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator_end_date"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "service_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "customer_car_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "status"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+    post:
+      tags:
+        - "Orders"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+  /orders/{id}:
+    delete:
+      tags:
+        - "Orders"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+    put:
+      tags:
+        - "Orders"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /orders/admin:
+    get:
+      tags:
+        - "Orders"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator_start_date"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator_end_date"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "service_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "customer_car_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "employee_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "status"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "administrator_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "customer_id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SimpleOrder"
+  /brands:
+    get:
+      tags:
+        - "Brands"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "name"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Brand"
+    post:
+      tags:
+        - "Brands"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Brand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Brand"
+    put:
+      tags:
+        - "Brands"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Brand"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /brands/{id}:
+    delete:
+      tags:
+        - "Brands"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /cars:
+    get:
+      tags:
+        - "Cars"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "model"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "brand"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Car"
+    post:
+      tags:
+        - "Cars"
+      description: ""
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Car"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Car"
+    put:
+      tags:
+        - "Cars"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Car"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /cars/{id}:
+    delete:
+      tags:
+        - "Cars"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+  /cars/id:
+    get:
+      tags:
+        - "Cars"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Car"
+  /customer-cars:
+    delete:
+      tags:
+        - "Customer Cars"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+    get:
+      tags:
+        - "Customer Cars"
+      description: ""
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "number"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "sortField"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "sortOrder"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "year"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "number"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "operator"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/CustomerCarSimple"
+    post:
+      tags:
+        - "Customer Cars"
+      description: ""
+      parameters:
+        - name: "user_id"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+        - name: "car_id"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/CustomerCar"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CustomerCarSimple"
+    put:
+      tags:
+        - "Customer Cars"
+      description: ""
+      parameters:
+      - name: "id"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/CustomerCar"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            'application/json':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            'application/json':
+              schema:
+                type: "object"
 components:
   schemas:
+    EmailWithPassword:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        password:
+          type: "string"
+    Role:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+    UserResponse:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        patronymic:
+          type: "string"
+        email:
+          type: "string"
+        role:
+          $ref: "#/components/schemas/Role"
+    TokenWithUser:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+        user:
+          $ref: "#/components/schemas/UserResponse"
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        patronymic:
+          type: "string"
+        email:
+          type: "string"
+        roles:
+          $ref: "#/components/schemas/Role"
+        password:
+          type: "string"
+    Object:
+      type: "object"
+      properties: {}
+    ServiceCategory:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+    Service:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        category:
+          $ref: "#/components/schemas/ServiceCategory"
+        name:
+          type: "string"
+        price:
+          type: "number"
+          format: "double"
+    Brand:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+    Car:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        brand:
+          $ref: "#/components/schemas/Brand"
+    UserSimpleInfo:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        patronymic:
+          type: "string"
+        email:
+          type: "string"
+    CustomerCarSimple:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        car:
+          $ref: "#/components/schemas/Car"
+        customer:
+          $ref: "#/components/schemas/UserSimpleInfo"
+        year:
+          type: "integer"
+          format: "int32"
+        number:
+          type: "string"
+        image:
+          type: "string"
+    LocalDate:
+      type: "object"
+      properties: {}
+    SimpleOrder:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        service:
+          $ref: "#/components/schemas/Service"
+        customerCar:
+          $ref: "#/components/schemas/CustomerCarSimple"
+        employee:
+          $ref: "#/components/schemas/UserSimpleInfo"
+        status:
+          type: "string"
+          enum:
+          - "IN_PROGRESS"
+          - "COMPLETED"
+        startDate:
+          $ref: "#/components/schemas/LocalDate"
+        endDate:
+          $ref: "#/components/schemas/LocalDate"
+        administrator:
+          $ref: "#/components/schemas/UserSimpleInfo"
+    OrderRequest:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        serviceId:
+          type: "integer"
+          format: "int32"
+        customerCarId:
+          type: "integer"
+          format: "int32"
+        employeeId:
+          type: "integer"
+          format: "int32"
+        status:
+          type: "string"
+          enum:
+          - "IN_PROGRESS"
+          - "COMPLETED"
+        startDate:
+          $ref: "#/components/schemas/LocalDate"
+        endDate:
+          $ref: "#/components/schemas/LocalDate"
+        administratorId:
+          type: "integer"
+          format: "int32"
+    CustomerCar:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        car:
+          $ref: "#/components/schemas/Car"
+        customer:
+          $ref: "#/components/schemas/User"
+        year:
+          type: "integer"
+          format: "int32"
+        number:
+          type: "string"
+        image:
+          type: "string"
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

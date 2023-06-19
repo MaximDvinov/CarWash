@@ -1,8 +1,9 @@
-package com.carwash.db.dao
+package com.carwash.feture.users
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.carwash.db.dbQuery
-import com.carwash.models.*
+import com.carwash.db.upsert
+import com.carwash.feture.users.models.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
@@ -56,7 +57,7 @@ class UserDao(database: Database) {
 
     suspend fun getUserByEmail(email: String): User? = dbQuery {
         UsersTable.select { UsersTable.email eq email }
-            .mapNotNull { tableToUserData(it) }
+            .mapNotNull { tableToUserData(row = it) }
             .singleOrNull()
     }
 
@@ -68,24 +69,22 @@ class UserDao(database: Database) {
 
     suspend fun getUserById(id: Int): User? = dbQuery {
         UsersTable.select { UsersTable.id eq id }
-            .mapNotNull { tableToUserData(it) }
+            .mapNotNull { tableToUserData(row = it) }
             .singleOrNull()
     }
 
     suspend fun getAllUser(): List<UserResponse> = dbQuery {
-        UsersTable.selectAll().map { tableToUserData(it).toResponse() }
+        UsersTable.selectAll().map { tableToUserData(row = it).toResponse() }
     }
 
-    suspend fun updateUser(id: Int, userData: User): User = dbQuery {
-        val updated = UsersTable.update({ UsersTable.id eq userData.id }) { row ->
+    suspend fun updateUser(id: Int, userData: User): Int = dbQuery {
+        UsersTable.update({ UsersTable.id eq userData.id }) { row ->
             row[firstName] = userData.firstName
             row[lastName] = userData.lastName
             row[patronymic] = userData.patronymic
             row[email] = userData.email
             row[isSendNotify] = userData.isSendNotify
         }
-
-        userData.copy(id = updated)
     }
 
     suspend fun deleteUser(id: Int) = dbQuery {
@@ -101,8 +100,10 @@ class UserDao(database: Database) {
         }
     }
 
+
     suspend fun updateRole(user: Int, role: Int) = dbQuery {
-        RoleUserTable.update({ RoleUserTable.userId eq user }) { row ->
+        RoleUserTable.upsert({ RoleUserTable.userId eq user }) { row ->
+            row[userId] = EntityID(user, UsersTable)
             row[roleId] = EntityID(role, RolesTable)
         }
     }
@@ -125,17 +126,31 @@ class UserDao(database: Database) {
         }
     }
 
-    private suspend fun tableToUserData(row: ResultRow): User {
-        return User(
-            id = row[UsersTable.id].value,
-            firstName = row[UsersTable.firstName],
-            lastName = row[UsersTable.lastName],
-            patronymic = row[UsersTable.patronymic],
-            email = row[UsersTable.email],
-            isSendNotify = row[UsersTable.isSendNotify],
-            roles = getUserRoles(row[UsersTable.id].value),
-            password = row[UsersTable.password]
-        )
+
+    suspend fun tableToUserData(alias: Alias<UsersTable>? = null, row: ResultRow): User {
+        return if (alias != null) {
+            User(
+                id = row[alias[UsersTable.id]].value,
+                firstName = row[alias[UsersTable.firstName]],
+                lastName = row[alias[UsersTable.lastName]],
+                patronymic = row[alias[UsersTable.patronymic]],
+                email = row[alias[UsersTable.email]],
+                isSendNotify = row[alias[UsersTable.isSendNotify]],
+                roles = getUserRoles(row[alias[UsersTable.id]].value),
+                password = row[alias[UsersTable.password]]
+            )
+        } else {
+            User(
+                id = row[UsersTable.id].value,
+                firstName = row[UsersTable.firstName],
+                lastName = row[UsersTable.lastName],
+                patronymic = row[UsersTable.patronymic],
+                email = row[UsersTable.email],
+                isSendNotify = row[UsersTable.isSendNotify],
+                roles = getUserRoles(row[UsersTable.id].value),
+                password = row[UsersTable.password]
+            )
+        }
     }
 
     suspend fun saveToken(user: Int, userToken: String) = dbQuery {
@@ -161,7 +176,7 @@ class UserDao(database: Database) {
 
         TokenWithUser(
             token = tokenTable[TokensTable.token],
-            user = tableToUserData(tokenTable).toResponse()
+            user = tableToUserData(row = tokenTable).toResponse()
         )
     }
 

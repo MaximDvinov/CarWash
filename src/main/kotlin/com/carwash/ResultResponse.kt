@@ -3,10 +3,10 @@ package com.carwash
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ResultResponse {
+sealed class ResultResponse<T> {
     @Serializable
-    data class Success<T>(val message: T) : ResultResponse()
+    data class Success<T>(val data: T) : ResultResponse<T>()
     @Serializable
-    data class Error(val error: String) : ResultResponse()
+    data class Error<T>(val error: String) : ResultResponse<T>()
 
 }

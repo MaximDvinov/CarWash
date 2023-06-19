@@ -1,10 +1,9 @@
-package com.carwash.routes
+package com.carwash.feture.users
 
 import com.carwash.ResultResponse
-import com.carwash.models.EmailWithPassword
-import com.carwash.models.User
+import com.carwash.feture.users.models.EmailWithPassword
+import com.carwash.feture.users.models.User
 import com.carwash.plugins.UserPrincipal
-import com.carwash.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -15,7 +14,7 @@ import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Application.userRoutes() {
-    val userService by inject<UserService>()
+    val userRepository by inject<UserRepository>()
 
     routing {
         get("/login") {
@@ -23,15 +22,15 @@ fun Application.userRoutes() {
 
             if (emailWithPassword.password.isBlank()) call.respond(
                 HttpStatusCode.BadRequest,
-                ResultResponse.Error("Invalid email or password")
+                ResultResponse.Error<String>("Invalid email or password")
             )
 
-            val token = userService.authUser(emailWithPassword)
+            val token = userRepository.authUser(emailWithPassword)
 
             if (token != null) {
                 call.respond(HttpStatusCode.OK, token)
             } else {
-                call.respond(HttpStatusCode.BadRequest, ResultResponse.Error("Invalid email or password"))
+                call.respond(HttpStatusCode.BadRequest, ResultResponse.Error<String>("Invalid email or password"))
             }
         }
 
@@ -40,14 +39,16 @@ fun Application.userRoutes() {
                 get("/") {
                     isAdministrator()
 
-                    val users = userService.getAllUser()
+                    val users = userRepository.getAllUser()
                     call.respond(HttpStatusCode.OK, users)
                 }
 
                 get("/{id}") {
-                    val user = userService.getUserById(call.parameters["id"]?.toIntOrNull()) ?: call.respond(
+                    isAdministrator()
+
+                    val user = userRepository.getUserById(call.parameters["id"]?.toIntOrNull()) ?: call.respond(
                         status = HttpStatusCode.NotFound,
-                        ResultResponse.Error("User not found"),
+                        ResultResponse.Error<String>("User not found"),
                     )
 
                     call.respond(HttpStatusCode.OK, user)
@@ -57,12 +58,12 @@ fun Application.userRoutes() {
                     isAdministrator()
 
                     val user = call.receive<User>()
-                    val newUser = userService.createUser(user)
+                    val newUser = userRepository.createUser(user)
 
                     if (newUser != null) {
                         call.respond(HttpStatusCode.OK, newUser)
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error("User not created"))
+                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error<String>("User not created"))
                     }
                 }
 
@@ -70,11 +71,11 @@ fun Application.userRoutes() {
                     isAdministrator()
                     val id = call.parameters["id"]?.toIntOrNull()
                     if (id != null) {
-                        val userId = userService.deleteUser(id)
+                        val userId = userRepository.deleteUser(id)
 
                         call.respond(HttpStatusCode.OK, ResultResponse.Success(userId))
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error("User not deleted"))
+                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error<String>("User not deleted"))
                     }
                 }
 
@@ -85,8 +86,13 @@ fun Application.userRoutes() {
                     val user = call.receive<User>()
 
                     if (id != null) {
-                        val updatedUser = userService.updateUser(id, user)
-
+                        if (userRepository.updateUser(id, user)) {
+                            call.respond(HttpStatusCode.OK, ResultResponse.Success("User updated"))
+                        } else {
+                            call.respond(HttpStatusCode.NotFound, ResultResponse.Error<String>("User not found"))
+                        }
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error<String>("User not updated"))
                     }
                 }
 
@@ -96,10 +102,10 @@ fun Application.userRoutes() {
                     val roleId = call.request.queryParameters["role"]?.toIntOrNull()
 
                     if (userId != null && roleId != null) {
-                        userService.updateRole(userId, roleId)
+                        userRepository.updateRole(userId, roleId)
                         call.respond(HttpStatusCode.OK, ResultResponse.Success("Role updated"))
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error("Invalid parameters"))
+                        call.respond(HttpStatusCode.BadRequest, ResultResponse.Error<String>("Invalid parameters"))
                     }
                 }
             }
@@ -110,6 +116,6 @@ fun Application.userRoutes() {
 suspend fun PipelineContext<Unit, ApplicationCall>.isAdministrator() {
     if (call.principal<UserPrincipal>()?.user?.role?.id != 1) call.respond(
         HttpStatusCode.Forbidden,
-        ResultResponse.Error("You are not administrator")
+        ResultResponse.Error<String>("You are not administrator")
     )
 }

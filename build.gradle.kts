@@ -39,7 +39,10 @@ dependencies {
 
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.postgresql:postgresql:$postgres_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     implementation("io.insert-koin:koin-ktor:3.4.1")
 
@@ -51,4 +54,5 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.1")
 }
